@@ -24,4 +24,12 @@ This annotation is a method annotation that identifies a method in the managed e
 
 This annotation is a method annotation that identifies a method in the managed execution class and the framework will run this method. This annotation must be specified in an execution managed class. If it is not specified, execution will exit with a warning message, however, if an *@AppTerm* annotated method exists that method will be called.
 
+== Annotation Detection
+
+This project depends on package _eu.infomas.annotation.AnnotationDetector_ as found on GitHub at https://github.com/rmuller/infomas-asl.
+
+The annotation detector is only used to locate the application class as annotated by *@Application* as described above.
+
+Method annotations are handled internally without assistance from the annotation detector.
+
 === Current version: 0.2.0.

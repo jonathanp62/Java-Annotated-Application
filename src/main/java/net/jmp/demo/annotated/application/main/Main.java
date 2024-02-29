@@ -58,6 +58,8 @@ public final class Main {
     private void run() {
         this.logger.entry();
 
+        // ApplicationLocator //
+
         final var applicationClassNameWrapper = this.getApplicationClassName();
 
         if (applicationClassNameWrapper.isPresent()) {
@@ -70,6 +72,8 @@ public final class Main {
             } catch (final ClassNotFoundException cnfe) {
                 this.logger.catching(cnfe);
             }
+
+            // ApplicationExecutor //
 
             if (applicationClass != null) {
                 final var appInit = this.getAppMethod(applicationClass, AppInit.class);
