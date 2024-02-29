@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ (#)pom.xml	0.1.0	02/27/2024
+
+ @author   Jonathan Parker
+ @version  0.3.0
+ @since    0.1.0
+
+ MIT License
+
+ Copyright (c) 2024 Jonathan M. Parker
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.jmp.demo.annotated.application</groupId>
+  <artifactId>annotated-app</artifactId>
+  <packaging>jar</packaging>
+  <version>0.1.0</version>
+  <name>An Annotated Application Demonstration</name>
+  <description>
+    An annotated application demonstration
+  </description>
+  <properties>
+    <junit.version>4.13.2</junit.version>
+    <logback.version>1.4.12</logback.version>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss zzz</maven.build.timestamp.format>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <repository.manager>http://localhost:8081/nexus</repository.manager>
+    <scm.url.base>svn://jonathan@localhost/IDEA</scm.url.base>
+    <slf4j.version>2.0.11</slf4j.version>
+  </properties>
+  <scm>
+    <connection>scm:svn:${scm.url.base}/Annotated-Application</connection>
+    <developerConnection>scm:svn:${scm.url.base}/Annotated-Application</developerConnection>
+    <tag>HEAD</tag>
+    <url>${scm.url.base}/Annotated-Application</url>
+  </scm>
+  <inceptionYear>2024</inceptionYear>
+  <developers>
+    <developer>
+      <name>Jonathan Parker</name>
+      <email>jonathanp62@gmail.com</email>
+      <timezone>America/Baltimore</timezone>
+      <roles>
+        <role>architect</role>
+        <role>committer</role>
+      </roles>
+      <properties>
+        <active>true></active>
+      </properties>
+    </developer>
+  </developers>
+  <distributionManagement>
+    <repository>
+      <id>nexusReleases</id>
+      <name>Releases</name>
+      <url>${repository.manager}/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexusSnapshots</id>
+      <name>Snapshots</name>
+      <url>${repository.manager}/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-compiler-plugin</artifactId>
+           <version>${maven.plugin.compiler.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-resources-plugin</artifactId>
+           <version>${maven.plugin.resources.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-clean-plugin</artifactId>
+           <version>${maven.plugin.clean.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-jar-plugin</artifactId>
+           <version>${maven.plugin.jar.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-dependency-plugin</artifactId>
+           <version>${maven.plugin.dependency.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-install-plugin</artifactId>
+           <version>${maven.plugin.install.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-javadoc-plugin</artifactId>
+           <version>${maven.plugin.javadoc.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-source-plugin</artifactId>
+           <version>${maven.plugin.source.version}</version>
+        </plugin>
+        <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-enforcer-plugin</artifactId>
+           <version>${maven.plugin.enforcer.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <configuration>
+          <useDefaultManifestFile>false</useDefaultManifestFile>
+          <archive>
+            <manifestFile>manifest.mf</manifestFile>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>target</directory>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}</directory>
+              <includes>
+              <include>test.file</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+     <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-main-resources</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/main/resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/java</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>*.xml</include>
+                    <include>*.properties</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-test-resources</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>src/test/resources</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/test/java</directory>
+                  <filtering>false</filtering>
+                  <includes>
+                    <include>*.xml</include>
+                    <include>*.properties</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>manifest.mf</manifestFile>
+	    <manifestEntries>
+              <Artifact-Version>${project.version}</Artifact-Version>
+              <Build-Time>${maven.build.timestamp}</Build-Time>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <classifier>javadoc</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+	    <source>${maven.compiler.source}</source>
+	    <target>${maven.compiler.target}</target>
+            <compilerArgument>-Xlint:unchecked</compilerArgument>
+	  </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-installed</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactItems>
+            <artifactItem>
+              <groupId>${project.groupId}</groupId>
+              <artifactId>${project.artifactId}</artifactId>
+              <version>${project.version}</version>
+              <type>jar</type>
+              <overWrite>true</overWrite>
+              <outputDirectory>/tmp</outputDirectory>
+              <destFileName/>
+            </artifactItem>
+          </artifactItems>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <failOnError>false</failOnError>
+          <show>private</show>
+          <tags>
+            <tag>
+              <name>revision</name>
+              <placement>t</placement>
+              <head>Revision:</head>
+            </tag>
+            <tag>
+              <name>updated</name>
+              <placement>t</placement>
+              <head>Updated:</head>
+            </tag>
+            <tag>
+              <name>todo</name>
+              <placement>tcm</placement>
+              <head>To-Do:</head>
+            </tag>
+          </tags>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.0.0</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>1.8</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-ext</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+  </dependencies>
+</project>

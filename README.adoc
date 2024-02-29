@@ -1,0 +1,27 @@
+= A demonstration of an annotated application
+
+This demonstration application is for the purpose of using annotations to execute an application.
+
+The main package (_net.jmp.demo.annotated.application.main_) is where the execution begins and a class with an *@Application* annotation is looked for. If one is found, processing continues or else it exits with nothing further to do.
+
+== Annotations
+
+The annotations described by can be found in the _net.jmp.demo.annotated.application.annotations_ package.
+
+*@Application*
+
+This annotation is a class annotation that identifies the class as being managed by the execution framework.
+
+*@AppInit*
+
+This annotation is a method annotation that identifies a method in the managed execution class and the framework will run this method first, if it is specified.
+
+*@AppTerm*
+
+This annotation is a method annotation that identifies a method in the managed execution class and the framework will run this method last, if it is specified.
+
+*@AppExec*
+
+This annotation is a method annotation that identifies a method in the managed execution class and the framework will run this method. This annotation must be specified in an execution managed class. If it is not specified, execution will exit with a warning message, however, if an *@AppTerm* annotated method exists that method will be called.
+
+=== Current version: 0.1.0.
