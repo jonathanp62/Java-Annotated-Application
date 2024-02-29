@@ -24,4 +24,4 @@ This annotation is a method annotation that identifies a method in the managed e
 
 This annotation is a method annotation that identifies a method in the managed execution class and the framework will run this method. This annotation must be specified in an execution managed class. If it is not specified, execution will exit with a warning message, however, if an *@AppTerm* annotated method exists that method will be called.
 
-=== Current version: 0.1.0.
+=== Current version: 0.2.0.
