@@ -44,6 +44,7 @@
     An annotated application demonstration
   </description>
   <properties>
+    <annotatin-detector.version>3.0.5</annotatin-detector.version>
     <junit.version>4.13.2</junit.version>
     <logback.version>1.4.12</logback.version>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss zzz</maven.build.timestamp.format>
@@ -338,6 +339,11 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>${logback.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>eu.infomas</groupId>
+      <artifactId>annotation-detector</artifactId>
+      <version>${annotatin-detector.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -1,10 +1,11 @@
 package net.jmp.demo.annotated.application.main;
 
 /*
+ * (#)Main.java 0.2.0   02/29/2024
  * (#)Main.java 0.1.0   02/27/2024
  *
  * @author    Jonathan Parker
- * @version   0.1.0
+ * @version   0.2.0
  * @since     0.1.0
  *
  * MIT License
@@ -30,15 +31,16 @@ package net.jmp.demo.annotated.application.main;
  * SOFTWARE.
  */
 
+import eu.infomas.annotation.AnnotationDetector;
+
 import java.io.*;
 
 import java.lang.annotation.Annotation;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.*;
-
-import java.util.stream.Collectors;
 
 import net.jmp.demo.annotated.application.annotations.*;
 
@@ -56,26 +58,47 @@ public final class Main {
     private void run() {
         this.logger.entry();
 
-        this.preloadClasses();
+        final var applicationClassNameWrapper = this.getApplicationClassName();
 
-        final var applicationClassWrapper = this.getApplicationClass();
+        if (applicationClassNameWrapper.isPresent()) {
+            final var applicationClassName = applicationClassNameWrapper.get();
 
-        if (applicationClassWrapper.isPresent()) {
-            final var applicationClass = applicationClassWrapper.get();
+            Class<?> applicationClass = null;
 
-            final var appInit = this.getAppMethod(applicationClass, AppInit.class);
-            final var appExec= this.getAppMethod(applicationClass, AppExec.class);
-            final var appTerm = this.getAppMethod(applicationClass, AppTerm.class);
-
-            appInit.ifPresent(method -> this.invokeAnnotatedMethod(applicationClass, method));
-
-            if (appExec.isPresent()) {
-                this.invokeAnnotatedMethod(applicationClass, appExec.get());
-            } else {
-                this.logger.warn("No annotated execution method was found in application: {}", applicationClass.getName());
+            try {
+                applicationClass = Class.forName(applicationClassName);
+            } catch (final ClassNotFoundException cnfe) {
+                this.logger.catching(cnfe);
             }
 
-            appTerm.ifPresent(method -> this.invokeAnnotatedMethod(applicationClass, method));
+            if (applicationClass != null) {
+                final var appInit = this.getAppMethod(applicationClass, AppInit.class);
+                final var appExec = this.getAppMethod(applicationClass, AppExec.class);
+                final var appTerm = this.getAppMethod(applicationClass, AppTerm.class);
+
+                Object applicationClassInstance = null;
+
+                try {
+                    applicationClassInstance = applicationClass.getDeclaredConstructor().newInstance();
+                } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
+                         NoSuchMethodException e) {
+                    this.logger.catching(e);
+                }
+
+                if (applicationClassInstance != null) {
+                    if (appInit.isPresent())
+                        this.invokeAnnotatedMethod(applicationClassInstance, appInit.get());
+
+                    if (appExec.isPresent()) {
+                        this.invokeAnnotatedMethod(applicationClassInstance, appExec.get());
+                    } else {
+                        this.logger.warn("No annotated execution method was found in application: {}", applicationClass.getName());
+                    }
+
+                    if (appTerm.isPresent())
+                        this.invokeAnnotatedMethod(applicationClassInstance, appTerm.get());
+                }
+            }
         } else {
             this.logger.warn("No annotated application class was found");
         }
@@ -83,12 +106,12 @@ public final class Main {
         this.logger.exit();
     }
 
-    private void invokeAnnotatedMethod(final Class<?> appClass, final Method method) {
-        this.logger.entry(appClass, method);
+    private void invokeAnnotatedMethod(final Object appClassInstance, final Method method) {
+        this.logger.entry(appClassInstance, method);
 
         try {
-            method.invoke(appClass.getDeclaredConstructor().newInstance());
-        } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
+            method.invoke(appClassInstance);
+        } catch (IllegalAccessException | InvocationTargetException e) {
             this.logger.catching(e);
         }
 
@@ -117,100 +140,50 @@ public final class Main {
         return Optional.ofNullable(result);
     }
 
-    private void preloadClasses() {
+    private Optional<String> getApplicationClassName() {
         this.logger.entry();
 
-        final var classesToLoad = List.of(
-                "net.jmp.demo.annotated.application.app.DemoApplication"
-        );
-
-        // This is done to load the class as the class loader won't find it unless it is loaded
+        final var classReporter = new ClassReporter();
+        final var annotationDetector = new AnnotationDetector(classReporter);
 
         try {
-            for (final var classToLoad : classesToLoad)
-                ClassLoader.getSystemClassLoader().loadClass(classToLoad);
-        } catch (final ClassNotFoundException cnfe) {
-            this.logger.catching(cnfe);
-        }
-
-        this.logger.exit();
-    }
-
-    private Optional<Class<?>> getApplicationClass() {
-        this.logger.entry();
-
-        Class<?> applicationClass = null;
-
-        final var packages = ClassLoader.getSystemClassLoader().getDefinedPackages();
-
-        for (final var pkg : packages) {
-            final var classes = this.findAllClassesUsingClassLoader(pkg.getName());
-
-            for (final var clazz : classes) {
-                final var appAnnotation = clazz.getAnnotation(Application.class);
-
-                if (appAnnotation != null) {
-                    applicationClass = clazz;
-
-                    if (this.logger.isDebugEnabled())
-                        this.logger.debug("Found application class: {}", clazz.getName());
-
-                    break;
-                }
-            }
-        }
-
-        this.logger.exit(applicationClass);
-
-        return Optional.ofNullable(applicationClass);
-    }
-
-    private Set<Class<?>> findAllClassesUsingClassLoader(final String packageName) {
-        this.logger.entry(packageName);
-
-        Set<Class<?>> classes;
-
-        try (final var stream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream(packageName.replaceAll("[.]", "/"))) {
-
-            if (stream != null) {
-                try (final var reader = new BufferedReader(new InputStreamReader(stream))) {
-                    classes = reader.lines()
-                            .filter(line -> line.endsWith(".class"))
-                            .map(line -> getClass(line, packageName))
-                            .collect(Collectors.toSet());
-                }
-            } else {
-                classes = new HashSet<>();
-            }
+            annotationDetector.detect();
         } catch (final IOException ioe) {
             this.logger.catching(ioe);
-
-            classes = new HashSet<>();
         }
 
-        this.logger.exit(classes);
+        final var applicationClassName = classReporter.getApplicationClassName();
 
-        return classes;
+        this.logger.exit(applicationClassName);
+
+        return Optional.ofNullable(applicationClassName);
     }
 
-    private Class<?> getClass(final String className, final String packageName) {
-        this.logger.entry(className, packageName);
+    class ClassReporter implements AnnotationDetector.TypeReporter {
+        private String applicationClassName;
 
-        Class<?> clazz;
-
-        try {
-            clazz = Class.forName(packageName + "."
-                    + className.substring(0, className.lastIndexOf('.')));
-        } catch (final ClassNotFoundException cnfe) {
-            this.logger.catching(cnfe);
-
-            clazz = null;
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends Annotation>[] annotations() {
+            return new Class[]{Application.class};
         }
 
-        this.logger.exit(clazz);
+        @Override
+        public void reportTypeAnnotation(
+                Class<? extends Annotation> annotation,
+                String className
+        ) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found application class: {}", className);
+                logger.debug("Annotated with         : {}", annotation.getName());
+            }
 
-        return clazz;
+            this.applicationClassName = className;
+        }
+
+        String getApplicationClassName() {
+            return this.applicationClassName;
+        }
     }
 
     public static void main(final String[] arguments) {
