@@ -57,9 +57,15 @@ final class ApplicationExecutor {
 
         assert applicationClass != null;
 
-        final var appInit = this.getAppMethod(applicationClass, AppInit.class);
-        final var appExec = this.getAppMethod(applicationClass, AppExec.class);
-        final var appTerm = this.getAppMethod(applicationClass, AppTerm.class);
+        this.createApplicationInstance(applicationClass).ifPresent(instance -> this.invokeApplicationMethods(applicationClass, instance));
+
+        this.logger.exit();
+    }
+
+    private Optional<Object> createApplicationInstance(final Class<?> applicationClass) {
+        this.logger.entry(applicationClass);
+
+        assert applicationClass != null;
 
         Object applicationClassInstance = null;
 
@@ -70,19 +76,30 @@ final class ApplicationExecutor {
             this.logger.catching(e);
         }
 
-        if (applicationClassInstance != null) {
-            if (appInit.isPresent())
-                this.invokeAnnotatedMethod(applicationClassInstance, appInit.get());
+        this.logger.exit(applicationClassInstance);
 
-            if (appExec.isPresent()) {
-                this.invokeAnnotatedMethod(applicationClassInstance, appExec.get());
-            } else {
-                this.logger.warn("No annotated execution method was found in application: {}", applicationClass.getName());
-            }
+        return Optional.ofNullable(applicationClassInstance);
+    }
 
-            if (appTerm.isPresent())
-                this.invokeAnnotatedMethod(applicationClassInstance, appTerm.get());
+    private void invokeApplicationMethods(final Class<?> applicationClass, final Object applicationInstance) {
+        this.logger.entry(applicationClass, applicationInstance);
+
+        assert applicationClass != null;
+        assert applicationInstance != null;
+
+        final var appInit = this.getAppMethod(applicationClass, AppInit.class);
+        final var appExec = this.getAppMethod(applicationClass, AppExec.class);
+        final var appTerm = this.getAppMethod(applicationClass, AppTerm.class);
+
+        appInit.ifPresent(method -> this.invokeAnnotatedMethod(applicationInstance, method));
+
+        if (appExec.isPresent()) {
+            this.invokeAnnotatedMethod(applicationInstance, appExec.get());
+        } else {
+            this.logger.warn("No annotated execution method was found in application: {}", applicationClass.getName());
         }
+
+        appTerm.ifPresent(method -> this.invokeAnnotatedMethod(applicationInstance, method));
 
         this.logger.exit();
     }
