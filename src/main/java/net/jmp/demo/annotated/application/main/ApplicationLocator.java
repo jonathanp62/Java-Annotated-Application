@@ -30,5 +30,113 @@ package net.jmp.demo.annotated.application.main;
  * SOFTWARE.
  */
 
+import eu.infomas.annotation.AnnotationDetector;
+
+import java.io.IOException;
+
+import java.lang.annotation.Annotation;
+
+import java.util.Optional;
+
+import net.jmp.demo.annotated.application.annotations.Application;
+
+import org.slf4j.LoggerFactory;
+
+import org.slf4j.ext.XLogger;
+
+
 final class ApplicationLocator {
+    private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
+
+    ApplicationLocator() {
+        super();
+    }
+
+    Optional<Class<?>> locateApplicationClass() {
+        this.logger.entry();
+
+        Class<?> applicationClass = null;
+
+        try {
+            final var applicationClassNameWrapper = this.getApplicationClassName();
+
+            if (applicationClassNameWrapper.isPresent()) {
+                final var applicationClassName = applicationClassNameWrapper.get();
+                final var applicationClassWrapper = this.loadAndGetApplicationClass(applicationClassName);
+
+                if (applicationClassWrapper.isPresent())
+                    applicationClass = applicationClassWrapper.get();
+                else
+                    this.logger.error("Failed to load application class: {}", applicationClassName);
+            } else {
+                this.logger.warn("No annotated application class was found");
+            }
+        } catch (final IOException ioe) {
+            this.logger.catching(ioe);
+        }
+
+        this.logger.exit(applicationClass);
+
+        return Optional.ofNullable(applicationClass);
+    }
+
+    private Optional<String> getApplicationClassName() throws IOException {
+        this.logger.entry();
+
+        final var classReporter = new ClassReporter();
+        final var annotationDetector = new AnnotationDetector(classReporter);
+
+        annotationDetector.detect();
+
+        final var applicationClassName = classReporter.getApplicationClassName();
+
+        this.logger.exit(applicationClassName);
+
+        return Optional.ofNullable(applicationClassName);
+    }
+
+    private Optional<Class<?>> loadAndGetApplicationClass(final String className) {
+        this.logger.entry(className);
+
+        Class<?> applicationClass = null;
+
+        // Loads the class
+
+        try {
+            applicationClass = Class.forName(className);
+        } catch (final ClassNotFoundException cnfe) {
+            this.logger.catching(cnfe);
+        }
+
+        this.logger.exit(applicationClass);
+
+        return Optional.ofNullable(applicationClass);
+    }
+
+    class ClassReporter implements AnnotationDetector.TypeReporter {
+        private String applicationClassName;
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends Annotation>[] annotations() {
+            return new Class[]{Application.class};
+        }
+
+        @Override
+        public void reportTypeAnnotation(
+                Class<? extends Annotation> annotation,
+                String className
+        ) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found application class: {}", className);
+                logger.debug("Annotated with         : {}", annotation.getName());
+            }
+
+            this.applicationClassName = className;
+        }
+
+        String getApplicationClassName() {
+            return this.applicationClassName;
+        }
+    }
 }
