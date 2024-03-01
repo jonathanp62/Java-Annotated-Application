@@ -31,14 +31,7 @@ package net.jmp.demo.annotated.application.main;
  * SOFTWARE.
  */
 
-import java.lang.annotation.Annotation;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import java.util.*;
-
-import net.jmp.demo.annotated.application.annotations.*;
+import java.util.Optional;
 
 import org.slf4j.LoggerFactory;
 
@@ -54,77 +47,30 @@ public final class Main {
     private void run() {
         this.logger.entry();
 
+        this.locateApplication().ifPresent(this::executeApplication);
+
+        this.logger.exit();
+    }
+
+    private Optional<Class<?>> locateApplication() {
+        this.logger.entry();
+
         final var locator = new ApplicationLocator();
-        final var applicationClassWrapper = locator.locateApplicationClass();
+        final var application = locator.locateApplicationClass();
 
-        // ApplicationExecutor //
+        this.logger.exit(application);
 
-        if (applicationClassWrapper.isPresent()) {
-            Class<?> applicationClass = applicationClassWrapper.get();
-
-            final var appInit = this.getAppMethod(applicationClass, AppInit.class);
-            final var appExec = this.getAppMethod(applicationClass, AppExec.class);
-            final var appTerm = this.getAppMethod(applicationClass, AppTerm.class);
-
-            Object applicationClassInstance = null;
-
-            try {
-                applicationClassInstance = applicationClass.getDeclaredConstructor().newInstance();
-            } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
-                     NoSuchMethodException e) {
-                this.logger.catching(e);
-            }
-
-            if (applicationClassInstance != null) {
-                if (appInit.isPresent())
-                    this.invokeAnnotatedMethod(applicationClassInstance, appInit.get());
-
-                if (appExec.isPresent()) {
-                    this.invokeAnnotatedMethod(applicationClassInstance, appExec.get());
-                } else {
-                    this.logger.warn("No annotated execution method was found in application: {}", applicationClass.getName());
-                }
-
-                if (appTerm.isPresent())
-                    this.invokeAnnotatedMethod(applicationClassInstance, appTerm.get());
-            }
-        }
-
-        this.logger.exit();
+        return application;
     }
 
-    private void invokeAnnotatedMethod(final Object appClassInstance, final Method method) {
-        this.logger.entry(appClassInstance, method);
+    private void executeApplication(final Class<?> applicationClass) {
+        this.logger.entry(applicationClass);
 
-        try {
-            method.invoke(appClassInstance);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            this.logger.catching(e);
-        }
+        assert applicationClass != null;
+
+        new ApplicationExecutor().executeApplication(applicationClass);
 
         this.logger.exit();
-    }
-
-    private Optional<Method> getAppMethod(final Class<?> appClass, final Class<? extends Annotation> annotation) {
-        this.logger.entry(appClass, annotation);
-
-        Method result = null;
-
-        final var methods = appClass.getMethods();
-
-        for (final var method : methods) {
-            final var appAnnotation = method.getAnnotation(annotation);
-
-            if (appAnnotation != null) {
-                result = method;
-
-                this.logger.debug("Annotated method '{}' found: {}", method.getName(), annotation.getName());
-            }
-        }
-
-        this.logger.exit(result);
-
-        return Optional.ofNullable(result);
     }
 
     public static void main(final String[] arguments) {

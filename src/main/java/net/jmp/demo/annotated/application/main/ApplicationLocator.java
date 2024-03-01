@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
-
 final class ApplicationLocator {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
@@ -97,6 +96,8 @@ final class ApplicationLocator {
 
     private Optional<Class<?>> loadAndGetApplicationClass(final String className) {
         this.logger.entry(className);
+
+        assert className != null;
 
         Class<?> applicationClass = null;
 
