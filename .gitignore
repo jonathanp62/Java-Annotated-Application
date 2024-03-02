@@ -1,3 +1,7 @@
+.gradle
 .idea
 annotated-app.iml
+build
+gradle
+gradlew
 target
