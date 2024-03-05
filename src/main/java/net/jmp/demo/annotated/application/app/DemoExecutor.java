@@ -1,12 +1,11 @@
 package net.jmp.demo.annotated.application.app;
 
 /*
- * (#)DemoApplication.java  0.4.0   03/05/2024
- * (#)DemoApplication.java  0.1.0   02/27/2024
+ * (#)DemoExecutor.java 0.4.0   03/05/2024
  *
  * @author    Jonathan Parker
  * @version   0.4.0
- * @since     0.1.0
+ * @since     0.4.0
  *
  * MIT License
  *
@@ -31,39 +30,22 @@ package net.jmp.demo.annotated.application.app;
  * SOFTWARE.
  */
 
-import net.jmp.demo.annotated.application.annotations.*;
-
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
-@Application
-public final class DemoApplication {
+final class DemoExecutor {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
-    @AppInit
-    public void initialize() {
-        this.logger.entry();
-
-        new DemoInitializer().initialize();
-
-        this.logger.exit();
+    DemoExecutor() {
+        super();
     }
 
-    @AppExec
-    public void execute() {
+    void execute() {
         this.logger.entry();
 
-        new DemoExecutor().execute();
-
-        this.logger.exit();
-    }
-
-    @AppTerm
-    public void terminate() {
-        this.logger.entry();
-
-        new DemoTerminator().terminate();
+        this.logger.info("Beginning execution...");
+        this.logger.info("Completed execution.");
 
         this.logger.exit();
     }
