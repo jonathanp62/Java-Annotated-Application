@@ -35,7 +35,7 @@
 <configuration scan="false" scanPeriod="60 seconds" packagingData="false" debug="false">
     <appender name="MAIN" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{ISO8601} %-5level [%logger] [%class{0}:%M] %msg%n</pattern>
+            <pattern>%d{ISO8601} %-5level [%logger] [%M] %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -52,6 +52,9 @@
         <appender-ref ref="MAIN" />
     </logger>
 
+    <logger name="net.jmp.demo.annotated.application.main.ApplicationConfigurator" additivity="false" level="debug">
+        <appender-ref ref="MAIN" />
+    </logger>
     <logger name="net.jmp.demo.annotated.application.main.ApplicationExecutor" additivity="false" level="debug">
         <appender-ref ref="MAIN" />
     </logger>

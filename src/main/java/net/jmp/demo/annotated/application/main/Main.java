@@ -1,11 +1,12 @@
 package net.jmp.demo.annotated.application.main;
 
 /*
+ * (#)Main.java 0.4.0   03/05/2024
  * (#)Main.java 0.2.0   02/29/2024
  * (#)Main.java 0.1.0   02/27/2024
  *
  * @author    Jonathan Parker
- * @version   0.2.0
+ * @version   0.4.0
  * @since     0.1.0
  *
  * MIT License
@@ -47,7 +48,10 @@ public final class Main {
     private void run() {
         this.logger.entry();
 
-        this.locateApplication().ifPresent(this::executeApplication);
+        this.locateApplication().ifPresent(clazz -> {
+            this.configureApplication(clazz);
+            this.executeApplication(clazz);
+        });
 
         this.logger.exit();
     }
@@ -61,6 +65,16 @@ public final class Main {
         this.logger.exit(application);
 
         return application;
+    }
+
+    private void configureApplication(final Class<?> applicationClass) {
+        this.logger.entry(applicationClass);
+
+        assert applicationClass != null;
+
+        new ApplicationConfigurator().configureApplication(applicationClass);
+
+        this.logger.exit();
     }
 
     private void executeApplication(final Class<?> applicationClass) {

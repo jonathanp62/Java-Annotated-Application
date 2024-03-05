@@ -1,12 +1,11 @@
-package net.jmp.demo.annotated.application.app;
+package net.jmp.demo.annotated.application.annotations;
 
 /*
- * (#)DemoApplication.java  0.4.0   03/05/2024
- * (#)DemoApplication.java  0.1.0   02/27/2024
+ * (#)AppConfig.java    0.4.0   03/05/2024
  *
  * @author    Jonathan Parker
  * @version   0.4.0
- * @since     0.1.0
+ * @since     0.4.0
  *
  * MIT License
  *
@@ -31,41 +30,15 @@ package net.jmp.demo.annotated.application.app;
  * SOFTWARE.
  */
 
-import net.jmp.demo.annotated.application.annotations.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.slf4j.LoggerFactory;
-
-import org.slf4j.ext.XLogger;
-
-@Application
-@AppConfig(configFileName = "config/demo.properties")
-public final class DemoApplication {
-    private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
-
-    @AppInit
-    public void initialize() {
-        this.logger.entry();
-
-        new DemoInitializer().initialize();
-
-        this.logger.exit();
-    }
-
-    @AppExec
-    public void execute() {
-        this.logger.entry();
-
-        new DemoExecutor().execute();
-
-        this.logger.exit();
-    }
-
-    @AppTerm
-    public void terminate() {
-        this.logger.entry();
-
-        new DemoTerminator().terminate();
-
-        this.logger.exit();
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE })
+public @interface AppConfig {
+    String configFileName();
 }
