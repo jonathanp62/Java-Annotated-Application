@@ -32,4 +32,4 @@ The annotation detector is only used to locate the application class as annotate
 
 Method annotations are handled internally without assistance from the annotation detector.
 
-=== Current version: 0.3.0.
+=== Current version: 0.4.0.
