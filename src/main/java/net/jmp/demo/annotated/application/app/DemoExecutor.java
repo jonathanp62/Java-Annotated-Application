@@ -30,12 +30,27 @@ package net.jmp.demo.annotated.application.app;
  * SOFTWARE.
  */
 
+import net.jmp.demo.annotated.application.annotations.ApplicationProperty;
+import net.jmp.demo.annotated.application.annotations.DataType;
+
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
 final class DemoExecutor {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
+
+    @ApplicationProperty(name = "demo.isDebugEnabled", type = DataType.BOOLEAN, optional = true)
+    private boolean isDebugEnabled;
+
+    @ApplicationProperty(name = "demo.maxRetryAttempts", type = DataType.INTEGER)
+    private boolean maxRetryAttempts;
+
+    @ApplicationProperty(name = "demo.numberOfMillisToWait", type = DataType.LONG)
+    private boolean numberOfMillisToWait;
+
+    @ApplicationProperty(name = "demo.nameOfOwner")
+    private String nameOfOwner;
 
     DemoExecutor() {
         super();

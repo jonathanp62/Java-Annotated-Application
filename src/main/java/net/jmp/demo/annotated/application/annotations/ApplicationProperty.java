@@ -1,7 +1,7 @@
-package net.jmp.demo.annotated.application.app;
+package net.jmp.demo.annotated.application.annotations;
 
 /*
- * (#)DemoInitializer.java  0.4.0   03/05/2024
+ * (#)ApplicationProperty.java  0.4.0   03/05/2024
  *
  * @author    Jonathan Parker
  * @version   0.4.0
@@ -30,27 +30,17 @@ package net.jmp.demo.annotated.application.app;
  * SOFTWARE.
  */
 
-import net.jmp.demo.annotated.application.annotations.ApplicationProperty;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.slf4j.LoggerFactory;
-
-import org.slf4j.ext.XLogger;
-
-final class DemoInitializer {
-    private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
-
-    @ApplicationProperty(name = "demo.nameOfOwner")
-    private String ownerName;
-
-    DemoInitializer() {
-        super();
-    }
-
-    void initialize() {
-        this.logger.entry();
-
-        this.logger.info("Initialized");
-
-        this.logger.exit();
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+public @interface ApplicationProperty {
+    String name();
+    DataType type() default DataType.STRING;
+    boolean optional() default false;
 }
