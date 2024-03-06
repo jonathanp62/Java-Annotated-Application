@@ -58,6 +58,9 @@
     <logger name="net.jmp.demo.annotated.application.main.ApplicationExecutor" additivity="false" level="debug">
         <appender-ref ref="MAIN" />
     </logger>
+    <logger name="net.jmp.demo.annotated.application.main.ApplicationInjector" additivity="false" level="debug">
+        <appender-ref ref="MAIN" />
+    </logger>
     <logger name="net.jmp.demo.annotated.application.main.ApplicationLocator" additivity="false" level="debug">
         <appender-ref ref="MAIN" />
     </logger>
