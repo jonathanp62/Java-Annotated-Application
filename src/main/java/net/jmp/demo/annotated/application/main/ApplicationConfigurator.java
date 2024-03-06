@@ -73,10 +73,8 @@ final class ApplicationConfigurator {
             final var properties = this.loadProperties(configFileName);
 
             if (!properties.isEmpty()) {
-                if (this.areAppPropertyAnnotationsPresent()) {
-                    if (this.injectAnnotatedFields(properties))
-                        this.logger.info("Configuration applied");
-                }
+                if (this.areAppPropertyAnnotationsPresent() && this.injectAnnotatedFields(properties))
+                    this.logger.info("Configuration applied");
             } else {
                 this.logger.warn("No properties found in the configuration");
             }
