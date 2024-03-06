@@ -1,7 +1,7 @@
-package net.jmp.demo.annotated.application.annotations;
+package net.jmp.demo.annotated.application.enumerations;
 
 /*
- * (#)DataType.java 0.4.0   03/05/2024
+ * (#)PropertyDataType.java 0.4.0   03/05/2024
  *
  * @author    Jonathan Parker
  * @version   0.4.0
@@ -30,7 +30,7 @@ package net.jmp.demo.annotated.application.annotations;
  * SOFTWARE.
  */
 
-public enum DataType {
+public enum PropertyDataType {
     BOOLEAN,
     INTEGER,
     LONG,

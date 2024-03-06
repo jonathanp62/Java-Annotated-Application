@@ -30,14 +30,21 @@ package net.jmp.demo.annotated.application.main;
  * SOFTWARE.
  */
 
+import eu.infomas.annotation.AnnotationDetector;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import java.lang.annotation.Annotation;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 import net.jmp.demo.annotated.application.annotations.AppConfig;
+import net.jmp.demo.annotated.application.annotations.ApplicationProperty;
 
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +66,10 @@ final class ApplicationConfigurator {
             final var properties = this.loadProperties(configFileName);
 
             if (!properties.isEmpty()) {
+                if (this.areAppPropertyAnnotationsPresent()) {
+                    this.logger.debug("Proceed with injection");
+                }
+
                 this.logger.info("Configuration applied");
             } else {
                 this.logger.warn("No properties found in the configuration");
@@ -112,4 +123,55 @@ final class ApplicationConfigurator {
 
         return properties;
     }
+
+    private boolean areAppPropertyAnnotationsPresent() {
+        this.logger.entry();
+
+        final var fieldReporter = new FieldReporter();
+        final var annotationDetector = new AnnotationDetector(fieldReporter);
+
+        try {
+            annotationDetector.detect();
+        } catch (final IOException ioe) {
+            this.logger.catching(ioe);
+        }
+
+        final var result = !fieldReporter.annotatedFields.isEmpty();
+
+        this.logger.exit(result);
+
+        return result;
+    }
+
+    class FieldReporter implements AnnotationDetector.FieldReporter {
+        private final List<AnnotatedField> annotatedFields = new ArrayList<>();
+
+        @Override
+        public void reportFieldAnnotation(final Class<? extends Annotation> aClass, final String s, final String s1) {
+            final var annotatedField = new AnnotatedField(s, s1);
+
+            this.annotatedFields.add(annotatedField);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found annotation class: {}", aClass.getName());
+                logger.debug("Class name            : {}", s);
+                logger.debug("Method name           : {}", s1);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Class<? extends Annotation>[] annotations() {
+            return new Class[]{ApplicationProperty.class};
+        }
+
+        public List<AnnotatedField> getAnnotatedFields() {
+            return this.annotatedFields;
+        }
+    }
+
+    record AnnotatedField(
+            String className,
+            String fieldName
+    ) {}
 }

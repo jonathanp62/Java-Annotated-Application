@@ -36,11 +36,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.jmp.demo.annotated.application.enumerations.PropertyDataType;
+
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface ApplicationProperty {
     String name();
-    DataType type() default DataType.STRING;
+    PropertyDataType type() default PropertyDataType.STRING;
     boolean optional() default false;
 }

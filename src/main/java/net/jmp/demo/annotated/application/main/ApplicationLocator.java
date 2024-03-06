@@ -1,10 +1,11 @@
 package net.jmp.demo.annotated.application.main;
 
 /*
- * (#)Main.ApplicationLocator   0.2.0   02/29/2024
+ * (#)ApplicationLocator    0.4.0   03/06/2024
+ * (#)ApplicationLocator    0.2.0   02/29/2024
  *
  * @author    Jonathan Parker
- * @version   0.2.0
+ * @version   0.4.0
  * @since     0.2.0
  *
  * MIT License
@@ -125,8 +126,8 @@ final class ApplicationLocator {
 
         @Override
         public void reportTypeAnnotation(
-                Class<? extends Annotation> annotation,
-                String className
+                final Class<? extends Annotation> annotation,
+                final String className
         ) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Found application class: {}", className);
