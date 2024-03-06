@@ -38,9 +38,6 @@ import java.io.IOException;
 
 import java.lang.annotation.Annotation;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,10 +55,28 @@ import org.slf4j.ext.XLogger;
 final class ApplicationConfigurator {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
-    private List<AnnotatedField> annotatedFields;
+    private static Properties properties;
+
+    private static List<AnnotatedField> annotatedFields;
 
     ApplicationConfigurator() {
         super();
+    }
+
+    private static void setProperties(final Properties properties) {
+        ApplicationConfigurator.properties = properties;
+    }
+
+    static Properties getProperties() {
+        return ApplicationConfigurator.properties;
+    }
+
+    static List<AnnotatedField> getAnnotatedFields() {
+        return ApplicationConfigurator.annotatedFields;
+    }
+
+    private static void setAnnotatedFields(List<AnnotatedField> annotatedFields) {
+        ApplicationConfigurator.annotatedFields = annotatedFields;
     }
 
     void configureApplication(final Class<?> applicationClass) {
@@ -70,28 +85,17 @@ final class ApplicationConfigurator {
         assert applicationClass != null;
 
         this.isApplicationConfigured(applicationClass).ifPresent(configFileName -> {
-            final var properties = this.loadProperties(configFileName);
+            ApplicationConfigurator.setProperties(this.loadProperties(configFileName));
 
             if (!properties.isEmpty()) {
-                if (this.areAppPropertyAnnotationsPresent() && this.injectAnnotatedFields(properties))
-                    this.logger.info("Configuration applied");
+                if (this.areAppPropertyAnnotationsPresent())
+                    this.logger.info("Configuration captured");
             } else {
                 this.logger.warn("No properties found in the configuration");
             }
         });
 
         this.logger.exit();
-    }
-
-    private boolean injectAnnotatedFields(final Properties properties) {
-        this.logger.entry(properties);
-
-        final var injector = new ApplicationInjector(properties, this.annotatedFields);
-        final var injectionOccurred = injector.injectAnnotatedFields();
-
-        this.logger.exit(injectionOccurred);
-
-        return injectionOccurred;
     }
 
     private Optional<String> isApplicationConfigured(final Class<?> applicationClass) {
@@ -151,9 +155,9 @@ final class ApplicationConfigurator {
             this.logger.catching(ioe);
         }
 
-        this.annotatedFields = fieldReporter.getAnnotatedFields();
+        ApplicationConfigurator.setAnnotatedFields(fieldReporter.getAnnotatedFields());
 
-        final var result = !this.annotatedFields.isEmpty();
+        final var result = !ApplicationConfigurator.annotatedFields.isEmpty();
 
         this.logger.exit(result);
 

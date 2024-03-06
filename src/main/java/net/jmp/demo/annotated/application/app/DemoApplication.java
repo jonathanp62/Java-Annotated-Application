@@ -33,6 +33,8 @@ package net.jmp.demo.annotated.application.app;
 
 import net.jmp.demo.annotated.application.annotations.*;
 
+import net.jmp.demo.annotated.application.main.ClassManager;
+
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
@@ -46,7 +48,11 @@ public final class DemoApplication {
     public void initialize() {
         this.logger.entry();
 
-        new DemoInitializer().initialize();
+        final var initializer = new DemoInitializer();
+
+        ClassManager.manage(DemoInitializer.class, initializer);
+
+        initializer.initialize();
 
         this.logger.exit();
     }
@@ -55,7 +61,11 @@ public final class DemoApplication {
     public void execute() {
         this.logger.entry();
 
-        new DemoExecutor().execute();
+        final var executor = new DemoExecutor();
+
+        ClassManager.manage(DemoExecutor.class, executor);
+
+        executor.execute();
 
         this.logger.exit();
     }
@@ -64,7 +74,11 @@ public final class DemoApplication {
     public void terminate() {
         this.logger.entry();
 
-        new DemoTerminator().terminate();
+        final var terminator = new DemoTerminator();
+
+        ClassManager.manage(DemoTerminator.class, terminator);
+
+        terminator.terminate();
 
         this.logger.exit();
     }

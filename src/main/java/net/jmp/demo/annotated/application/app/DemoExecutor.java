@@ -31,6 +31,7 @@ package net.jmp.demo.annotated.application.app;
  */
 
 import net.jmp.demo.annotated.application.annotations.ApplicationProperty;
+import net.jmp.demo.annotated.application.annotations.ManagedClass;
 
 import net.jmp.demo.annotated.application.enumerations.PropertyDataType;
 
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
+@ManagedClass
 final class DemoExecutor {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
