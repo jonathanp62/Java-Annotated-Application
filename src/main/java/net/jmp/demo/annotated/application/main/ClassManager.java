@@ -107,7 +107,9 @@ public final class ClassManager {
                     final Field field = clazz.getDeclaredField(fieldName);
 
                     if (field.isAnnotationPresent(ApplicationProperty.class)) {
-                        if (!Modifier.isPublic(field.getModifiers()))
+                        final var isFieldPublic = Modifier.isPublic(field.getModifiers());
+
+                        if (!isFieldPublic)
                             field.setAccessible(true);
 
                         final var applicationProperty = field.getAnnotation(ApplicationProperty.class);
@@ -129,6 +131,9 @@ public final class ClassManager {
                                             field,
                                             type);
                             }
+
+                            if (!isFieldPublic)
+                                field.setAccessible(false);
 
                             result = true;
                         } else {
