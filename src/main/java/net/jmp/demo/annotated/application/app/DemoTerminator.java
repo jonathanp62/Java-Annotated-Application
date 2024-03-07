@@ -34,10 +34,15 @@ import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
-final class DemoTerminator {
+/*
+ * The class and constructor must be public for
+ * the ClassManager.newInstance() to work.
+ */
+
+public final class DemoTerminator {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
-    DemoTerminator() {
+    public DemoTerminator() {
         super();
     }
 

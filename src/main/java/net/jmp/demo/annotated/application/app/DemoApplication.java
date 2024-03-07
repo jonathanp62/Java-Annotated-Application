@@ -48,11 +48,9 @@ public final class DemoApplication {
     public void initialize() {
         this.logger.entry();
 
-        final var initializer = new DemoInitializer();
+        final var initializer = ClassManager.newInstance(DemoInitializer.class);
 
-        ClassManager.manage(DemoInitializer.class, initializer);
-
-        initializer.initialize();
+        initializer.ifPresent(instance -> ((DemoInitializer) instance).initialize());
 
         this.logger.exit();
     }
@@ -61,11 +59,9 @@ public final class DemoApplication {
     public void execute() {
         this.logger.entry();
 
-        final var executor = new DemoExecutor();
+        final var executor = ClassManager.newInstance(DemoExecutor.class);
 
-        ClassManager.manage(DemoExecutor.class, executor);
-
-        executor.execute();
+        executor.ifPresent(instance -> ((DemoExecutor) instance).execute());
 
         this.logger.exit();
     }
@@ -74,11 +70,9 @@ public final class DemoApplication {
     public void terminate() {
         this.logger.entry();
 
-        final var terminator = new DemoTerminator();
+        final var terminator = ClassManager.newInstance(DemoTerminator.class);
 
-        ClassManager.manage(DemoTerminator.class, terminator);
-
-        terminator.terminate();
+        terminator.ifPresent(instance -> ((DemoTerminator) instance).terminate());
 
         this.logger.exit();
     }

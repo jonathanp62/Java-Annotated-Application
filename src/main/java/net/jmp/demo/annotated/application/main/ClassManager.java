@@ -40,14 +40,39 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.ext.XLogger;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+
+import java.util.Optional;
 
 public final class ClassManager {
     private ClassManager() {
         super();
     }
 
-    public static void manage(final Class<?> managedClass, final Object managedClassInstance) {
+    public static Optional<Object> newInstance(final Class<?> managedClass) {
+        final var logger = new XLogger(LoggerFactory.getLogger(ClassManager.class.getName()));
+
+        logger.entry(managedClass);
+
+        Object classInstance = null;
+
+        try {
+            classInstance = managedClass.getDeclaredConstructor().newInstance();
+        } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            logger.catching(e);
+        }
+
+        if (classInstance != null)
+            inject(managedClass, classInstance);
+
+        logger.exit(classInstance);
+
+        return Optional.ofNullable(classInstance);
+    }
+
+    private static void inject(final Class<?> managedClass, final Object managedClassInstance) {
         final var logger = new XLogger(LoggerFactory.getLogger(ClassManager.class.getName()));
 
         logger.entry(managedClass, managedClassInstance);

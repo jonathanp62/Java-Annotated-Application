@@ -102,10 +102,15 @@ tasks.withType(Javadoc) {
     options.encoding = 'UTF-8'
 }
 
+/*
+ * Execute with - gradle execProgram instead of gradle run
+ */
+
 task execProgram(type: JavaExec) {
     group = "Execution"
     description = "Run the main class with JavaExecTask"
     classpath = sourceSets.main.runtimeClasspath
     mainClass = javaMainClass
+    allJvmArgs = ['-ea', '-Dlogback.configurationFile=config/logback.xml']
 }
 
