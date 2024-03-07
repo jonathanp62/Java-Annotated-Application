@@ -37,19 +37,14 @@ import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
-/*
- * The class and constructor must be public for
- * the ClassManager.newInstance() to work.
- */
-
 @ManagedClass
-public final class DemoInitializer {
+final class DemoInitializer {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
     @ApplicationProperty(name = "demo.nameOfOwner")
     private String ownerName;
 
-    public DemoInitializer() {
+    DemoInitializer() {
         super();
     }
 

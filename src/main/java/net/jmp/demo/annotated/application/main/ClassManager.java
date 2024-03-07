@@ -58,7 +58,12 @@ public final class ClassManager {
         Object classInstance = null;
 
         try {
-            classInstance = managedClass.getDeclaredConstructor().newInstance();
+            final var classConstructor = managedClass.getDeclaredConstructor();
+
+            if (!Modifier.isPublic(classConstructor.getModifiers()))
+                classConstructor.setAccessible(true);
+
+            classInstance = classConstructor.newInstance();
         } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
                  NoSuchMethodException e) {
             logger.catching(e);
@@ -107,9 +112,7 @@ public final class ClassManager {
                     final Field field = clazz.getDeclaredField(fieldName);
 
                     if (field.isAnnotationPresent(ApplicationProperty.class)) {
-                        final var isFieldPublic = Modifier.isPublic(field.getModifiers());
-
-                        if (!isFieldPublic)
+                        if (!Modifier.isPublic(field.getModifiers()))
                             field.setAccessible(true);
 
                         final var applicationProperty = field.getAnnotation(ApplicationProperty.class);
@@ -131,10 +134,7 @@ public final class ClassManager {
                                             field,
                                             type);
                             }
-
-                            if (!isFieldPublic)
-                                field.setAccessible(false);
-
+                            
                             result = true;
                         } else {
                             logger.warn("No application property defined for field annotation: {}", name);

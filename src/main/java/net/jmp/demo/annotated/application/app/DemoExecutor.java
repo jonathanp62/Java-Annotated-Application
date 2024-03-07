@@ -39,13 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
-/*
- * The class and constructor must be public for
- * the ClassManager.newInstance() to work.
- */
-
 @ManagedClass
-public final class DemoExecutor {
+final class DemoExecutor {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
 
     @ApplicationProperty(name = "demo.isDebugEnabled", type = PropertyDataType.BOOLEAN, optional = true)
@@ -60,7 +55,7 @@ public final class DemoExecutor {
     @ApplicationProperty(name = "demo.nameOfOwner")
     private String nameOfOwner;
 
-    public DemoExecutor() {
+    DemoExecutor() {
         super();
     }
 
