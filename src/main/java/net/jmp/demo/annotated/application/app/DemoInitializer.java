@@ -51,7 +51,11 @@ final class DemoInitializer {
     void initialize() {
         this.logger.entry();
 
-        this.logger.info("Initialized");
+        this.logger.info("Beginning initialization...");
+
+        this.logger.info("Owner: {}", this.ownerName);
+
+        this.logger.info("Completed initialization.");
 
         this.logger.exit();
     }

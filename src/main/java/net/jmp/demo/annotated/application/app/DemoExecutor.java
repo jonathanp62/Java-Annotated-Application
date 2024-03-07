@@ -47,10 +47,10 @@ final class DemoExecutor {
     private boolean isDebugEnabled;
 
     @ApplicationProperty(name = "demo.maxRetryAttempts", type = PropertyDataType.INTEGER)
-    private boolean maxRetryAttempts;
+    private int maxRetryAttempts;
 
     @ApplicationProperty(name = "demo.numberOfMillisToWait", type = PropertyDataType.LONG)
-    private boolean numberOfMillisToWait;
+    private long numberOfMillisToWait;
 
     @ApplicationProperty(name = "demo.nameOfOwner")
     private String nameOfOwner;
@@ -63,6 +63,12 @@ final class DemoExecutor {
         this.logger.entry();
 
         this.logger.info("Beginning execution...");
+
+        this.logger.info("isDebugEnabled      : {}", this.isDebugEnabled);
+        this.logger.info("maxRetryAttempts    : {}", this.maxRetryAttempts);
+        this.logger.info("numberOfMillisToWait: {}", this.numberOfMillisToWait);
+        this.logger.info("nameOfOwner         : {}", this.nameOfOwner);
+
         this.logger.info("Completed execution.");
 
         this.logger.exit();

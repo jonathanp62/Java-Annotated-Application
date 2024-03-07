@@ -89,7 +89,7 @@ final class ApplicationConfigurator {
 
             if (!properties.isEmpty()) {
                 if (this.areAppPropertyAnnotationsPresent())
-                    this.logger.info("Configuration captured");
+                    this.logger.debug("Configuration captured");
             } else {
                 this.logger.warn("No properties found in the configuration");
             }

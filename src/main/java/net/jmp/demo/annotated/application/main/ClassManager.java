@@ -80,18 +80,26 @@ public final class ClassManager {
     private static void inject(final Class<?> managedClass, final Object managedClassInstance) {
         final var logger = new XLogger(LoggerFactory.getLogger(ClassManager.class.getName()));
 
+        assert managedClass != null;
+        assert managedClassInstance != null;
+
         logger.entry(managedClass, managedClassInstance);
 
         final var managedAnnotation = managedClass.getAnnotation(ManagedClass.class);
 
-        if (managedAnnotation != null && injectAnnotatedFields(logger, managedClass, managedClass))
+        if (managedAnnotation != null && injectAnnotatedFields(logger, managedClass, managedClassInstance))
             logger.debug("Instance of class {} injected", managedClassInstance.getClass().getName());
 
         logger.exit();
     }
 
     private static boolean injectAnnotatedFields(final XLogger logger, final Class<?> managedClass, final Object managedClassInstance) {
+        assert logger != null;
+
         logger.entry(managedClass, managedClassInstance);
+
+        assert managedClass != null;
+        assert managedClassInstance != null;
 
         final var managedClassName = managedClass.getName();
         final var properties = ApplicationConfigurator.getProperties();
@@ -134,6 +142,13 @@ public final class ClassManager {
                                             field,
                                             type);
                             }
+
+                            injectPropertyValue(
+                                    logger,
+                                    managedClassInstance,
+                                    field,
+                                    type,
+                                    propertyValue);
                             
                             result = true;
                         } else {
@@ -158,7 +173,64 @@ public final class ClassManager {
             final Object instance,
             final Field field,
             final PropertyDataType dataType) {
+        assert logger != null;
+
         logger.entry(instance, field, dataType);
+
+        assert instance != null;
+        assert field != null;
+        assert dataType != null;
+
+        try {
+            if (dataType == PropertyDataType.STRING)
+                field.set(instance, "");
+            else if (dataType == PropertyDataType.LONG)
+                field.set(instance, 0L);
+            else if (dataType == PropertyDataType.INTEGER)
+                field.set(instance, 0);
+            else if (dataType == PropertyDataType.BOOLEAN)
+                field.set(instance, false);
+        } catch (IllegalAccessException iae) {
+            throw new RuntimeException("Unable to set field: " + field.getName() + " to default value: " + iae.getLocalizedMessage(), iae);
+        }
+
+        logger.exit();
+    }
+
+    private static void injectPropertyValue(
+            final XLogger logger,
+            final Object instance,
+            final Field field,
+            final PropertyDataType dataType,
+            final String value) {
+        assert logger != null;
+
+        logger.entry(instance, field, dataType,value);
+
+        assert instance != null;
+        assert field != null;
+        assert dataType != null;
+        assert value != null;
+
+        try {
+            if (dataType == PropertyDataType.STRING)
+                field.set(instance, value);
+            else if (dataType == PropertyDataType.LONG)
+                field.set(instance, Long.parseLong(value));
+            else if (dataType == PropertyDataType.INTEGER)
+                field.set(instance, Integer.parseInt(value));
+            else if (dataType == PropertyDataType.BOOLEAN) {
+                if ("true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value))
+                    field.set(instance, true);
+                else if ("false".equalsIgnoreCase(value) || "no".equalsIgnoreCase(value))
+                    field.set(instance, false);
+                else
+                    throw new RuntimeException("Invalid boolean expression on field: " + field.getName());
+            }
+        } catch (IllegalAccessException iae) {
+            throw new RuntimeException("Unable to set field: " + field.getName() + ": " + iae.getLocalizedMessage(), iae);
+        }
+
         logger.exit();
     }
 }

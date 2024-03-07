@@ -39,32 +39,32 @@
         </encoder>
     </appender>
 
-    <logger name="net.jmp.demo.annotated.application.app.DemoApplication" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.app.DemoApplication" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.app.DemoExecutor" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.app.DemoExecutor" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.app.DemoInitializer" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.app.DemoInitializer" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.app.DemoTerminator" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.app.DemoTerminator" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
 
-    <logger name="net.jmp.demo.annotated.application.main.ApplicationConfigurator" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.main.ApplicationConfigurator" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.main.ApplicationExecutor" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.main.ApplicationExecutor" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.main.ApplicationLocator" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.main.ApplicationLocator" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.main.ClassManager" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.main.ClassManager" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
-    <logger name="net.jmp.demo.annotated.application.main.Main" additivity="false" level="debug">
+    <logger name="net.jmp.demo.annotated.application.main.Main" additivity="false" level="info">
         <appender-ref ref="MAIN" />
     </logger>
 

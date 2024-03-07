@@ -44,7 +44,8 @@ final class DemoTerminator {
     void terminate() {
         this.logger.entry();
 
-        this.logger.info("Terminated");
+        this.logger.info("Beginning termination...");
+        this.logger.info("Completed termination.");
 
         this.logger.exit();
     }
