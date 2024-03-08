@@ -37,6 +37,7 @@ import net.jmp.demo.annotated.application.annotations.ManagedClass;
 import net.jmp.demo.annotated.application.enumerations.PropertyDataType;
 
 import net.jmp.demo.annotated.application.exceptions.ApplicationPropertyInjectionException;
+import net.jmp.demo.annotated.application.exceptions.PropertyInjectionException;
 
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public final class ClassManager {
         super();
     }
 
-    public static Optional<Object> newInstance(final Class<?> managedClass) {
+    public static Optional<Object> newInstance(final Class<?> managedClass) throws PropertyInjectionException {
         final var logger = new XLogger(LoggerFactory.getLogger(ClassManager.class.getName()));
 
         logger.entry(managedClass);
@@ -80,7 +81,7 @@ public final class ClassManager {
         return Optional.ofNullable(classInstance);
     }
 
-    private static void inject(final Class<?> managedClass, final Object managedClassInstance) {
+    private static void inject(final Class<?> managedClass, final Object managedClassInstance) throws PropertyInjectionException {
         final var logger = new XLogger(LoggerFactory.getLogger(ClassManager.class.getName()));
 
         assert managedClass != null;
@@ -96,7 +97,7 @@ public final class ClassManager {
         logger.exit();
     }
 
-    private static boolean injectAnnotatedFields(final XLogger logger, final Class<?> managedClass, final Object managedClassInstance) {
+    private static boolean injectAnnotatedFields(final XLogger logger, final Class<?> managedClass, final Object managedClassInstance) throws PropertyInjectionException {
         assert logger != null;
 
         logger.entry(managedClass, managedClassInstance);
@@ -178,7 +179,7 @@ public final class ClassManager {
             final String propertyName,
             final Object instance,
             final Field field,
-            final PropertyDataType dataType) {
+            final PropertyDataType dataType) throws PropertyInjectionException {
         assert logger != null;
 
         logger.entry(instance, propertyName, field, dataType);
@@ -195,7 +196,7 @@ public final class ClassManager {
                 case INTEGER -> field.set(instance, 0);
                 case BOOLEAN -> field.set(instance, false);
             }
-        } catch (IllegalAccessException iae) {
+        } catch (final IllegalAccessException iae) {
             final var exception = new ApplicationPropertyInjectionException("Unable to set field to default value");
 
             exception.setFieldName(field.getName());
@@ -221,7 +222,7 @@ public final class ClassManager {
             final Object instance,
             final Field field,
             final PropertyDataType dataType,
-            final String value) {
+            final String value) throws PropertyInjectionException {
         assert logger != null;
 
         logger.entry(instance, propertyName, field, dataType, value);   // @todo Fix
@@ -254,7 +255,7 @@ public final class ClassManager {
                     }
                 }
             }
-        } catch (IllegalAccessException iae) {
+        } catch (final IllegalAccessException iae) {
             final var exception = new ApplicationPropertyInjectionException("Unable to set field");
 
             exception.setFieldName(field.getName());

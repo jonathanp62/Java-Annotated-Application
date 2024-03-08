@@ -1,11 +1,12 @@
 package net.jmp.demo.annotated.application.app;
 
 /*
+ * (#)DemoApplication.java  0.5.0   03/08/2024
  * (#)DemoApplication.java  0.4.0   03/05/2024
  * (#)DemoApplication.java  0.1.0   02/27/2024
  *
  * @author    Jonathan Parker
- * @version   0.4.0
+ * @version   0.5.0
  * @since     0.1.0
  *
  * MIT License
@@ -35,6 +36,8 @@ import net.jmp.demo.annotated.application.annotations.*;
 
 import net.jmp.demo.annotated.application.main.ClassManager;
 
+import net.jmp.demo.annotated.application.exceptions.PropertyInjectionException;
+
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
@@ -48,9 +51,13 @@ public final class DemoApplication {
     public void initialize() {
         this.logger.entry();
 
-        final var initializer = ClassManager.newInstance(DemoInitializer.class);
+        try {
+            final var initializer = ClassManager.newInstance(DemoInitializer.class);
 
-        initializer.ifPresent(instance -> ((DemoInitializer) instance).initialize());
+            initializer.ifPresent(instance -> ((DemoInitializer) instance).initialize());
+        } catch (final PropertyInjectionException pie) {
+            this.logger.catching(pie);
+        }
 
         this.logger.exit();
     }
@@ -59,9 +66,13 @@ public final class DemoApplication {
     public void execute() {
         this.logger.entry();
 
-        final var executor = ClassManager.newInstance(DemoExecutor.class);
+        try {
+            final var executor = ClassManager.newInstance(DemoExecutor.class);
 
-        executor.ifPresent(instance -> ((DemoExecutor) instance).execute());
+            executor.ifPresent(instance -> ((DemoExecutor) instance).execute());
+        } catch (final PropertyInjectionException pie) {
+            this.logger.catching(pie);
+        }
 
         this.logger.exit();
     }
@@ -70,9 +81,13 @@ public final class DemoApplication {
     public void terminate() {
         this.logger.entry();
 
-        final var terminator = ClassManager.newInstance(DemoTerminator.class);
+        try {
+            final var terminator = ClassManager.newInstance(DemoTerminator.class);
 
-        terminator.ifPresent(instance -> ((DemoTerminator) instance).terminate());
+            terminator.ifPresent(instance -> ((DemoTerminator) instance).terminate());
+        } catch (final PropertyInjectionException pie) {
+            this.logger.catching(pie);
+        }
 
         this.logger.exit();
     }

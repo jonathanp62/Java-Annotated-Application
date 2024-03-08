@@ -33,7 +33,7 @@ package net.jmp.demo.annotated.application.exceptions;
 import net.jmp.demo.annotated.application.enumerations.PropertyDataType;
 import net.jmp.demo.annotated.application.enumerations.PropertyInjectionExceptionType;
 
-public abstract class PropertyInjectionException extends RuntimeException {
+public abstract class PropertyInjectionException extends Exception {
     protected String fieldName;
     protected String propertyName;
     protected PropertyDataType dataType;
