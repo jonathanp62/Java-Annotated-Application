@@ -1,10 +1,11 @@
 package net.jmp.demo.annotated.application.main;
 
 /*
+ * (#)ApplicationConfigurator.java  0.5.0   03/08/2024
  * (#)ApplicationConfigurator.java  0.4.0   03/05/2024
  *
  * @author    Jonathan Parker
- * @version   0.4.0
+ * @version   0.5.0
  * @since     0.4.0
  *
  * MIT License
@@ -45,6 +46,7 @@ import java.util.Properties;
 
 import net.jmp.demo.annotated.application.annotations.AppConfig;
 import net.jmp.demo.annotated.application.annotations.ApplicationProperty;
+import net.jmp.demo.annotated.application.annotations.SystemProperty;
 
 import net.jmp.demo.annotated.application.records.AnnotatedField;
 
@@ -88,7 +90,7 @@ final class ApplicationConfigurator {
             ApplicationConfigurator.setProperties(this.loadProperties(configFileName));
 
             if (!properties.isEmpty()) {
-                if (this.areAppPropertyAnnotationsPresent())
+                if (this.arePropertyAnnotationsPresent())
                     this.logger.debug("Configuration captured");
             } else {
                 this.logger.warn("No properties found in the configuration");
@@ -123,14 +125,14 @@ final class ApplicationConfigurator {
 
         assert configFileName != null;
 
-        Properties properties = new Properties();
+        final var props = new Properties();
 
         if (!configFileName.isBlank()) {
             this.logger.debug("Loading application properties from configuration file: {}", configFileName);
 
             try (final FileInputStream fis = new FileInputStream(configFileName)) {
                 try (final BufferedInputStream bis = new BufferedInputStream(fis)) {
-                    properties.load(bis);
+                    props.load(bis);
                     this.logger.debug("Done loading application properties");
                 }
             } catch (final IOException ioe) {
@@ -138,12 +140,12 @@ final class ApplicationConfigurator {
             }
         }
 
-        this.logger.exit(properties);
+        this.logger.exit(props);
 
-        return properties;
+        return props;
     }
 
-    private boolean areAppPropertyAnnotationsPresent() {
+    private boolean arePropertyAnnotationsPresent() {
         this.logger.entry();
 
         final var fieldReporter = new FieldReporter();
@@ -176,14 +178,14 @@ final class ApplicationConfigurator {
             if (logger.isDebugEnabled()) {
                 logger.debug("Found annotation class: {}", aClass.getName());
                 logger.debug("Class name            : {}", s);
-                logger.debug("Method name           : {}", s1);
+                logger.debug("Field name            : {}", s1);
             }
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public Class<? extends Annotation>[] annotations() {
-            return new Class[]{ApplicationProperty.class};
+            return new Class[]{ApplicationProperty.class, SystemProperty.class};
         }
 
         public List<AnnotatedField> getAnnotatedFields() {

@@ -1,10 +1,11 @@
 package net.jmp.demo.annotated.application.app;
 
 /*
+ * (#)DemoTerminator.java   0.5.0   03/08/2024
  * (#)DemoTerminator.java   0.4.0   03/05/2024
  *
  * @author    Jonathan Parker
- * @version   0.4.0
+ * @version   0.5.0
  * @since     0.4.0
  *
  * MIT License
@@ -30,12 +31,19 @@ package net.jmp.demo.annotated.application.app;
  * SOFTWARE.
  */
 
+import net.jmp.demo.annotated.application.annotations.ManagedClass;
+import net.jmp.demo.annotated.application.annotations.SystemProperty;
+
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.ext.XLogger;
 
+@ManagedClass
 final class DemoTerminator {
     private final XLogger logger = new XLogger(LoggerFactory.getLogger(this.getClass().getName()));
+
+    @SystemProperty(name = "logback.configurationFile")
+    private String logbackConfigurationFileName;
 
     DemoTerminator() {
         super();
@@ -45,6 +53,9 @@ final class DemoTerminator {
         this.logger.entry();
 
         this.logger.info("Beginning termination...");
+
+        this.logger.info("logbackConfigurationFileName: {}", this.logbackConfigurationFileName);
+
         this.logger.info("Completed termination.");
 
         this.logger.exit();

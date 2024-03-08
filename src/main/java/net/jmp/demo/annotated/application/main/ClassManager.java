@@ -34,6 +34,7 @@ package net.jmp.demo.annotated.application.main;
 import net.jmp.demo.annotated.application.annotations.ApplicationProperty;
 import net.jmp.demo.annotated.application.annotations.ManagedClass;
 
+import net.jmp.demo.annotated.application.annotations.SystemProperty;
 import net.jmp.demo.annotated.application.enumerations.PropertyDataType;
 
 import net.jmp.demo.annotated.application.exceptions.ApplicationPropertyInjectionException;
@@ -106,7 +107,6 @@ public final class ClassManager {
         assert managedClassInstance != null;
 
         final var managedClassName = managedClass.getName();
-        final var properties = ApplicationConfigurator.getProperties();
         final var annotatedFields = ApplicationConfigurator.getAnnotatedFields();
 
         boolean result = false;
@@ -121,52 +121,125 @@ public final class ClassManager {
 
                 try {
                     final var clazz = Class.forName(className);
-                    final Field field = clazz.getDeclaredField(fieldName);
+                    final var field = clazz.getDeclaredField(fieldName);
 
                     if (field.isAnnotationPresent(ApplicationProperty.class)) {
-                        if (!Modifier.isPublic(field.getModifiers()))
-                            field.setAccessible(true);
-
-                        final var applicationProperty = field.getAnnotation(ApplicationProperty.class);
-
-                        final var name = applicationProperty.name();
-                        final var type = applicationProperty.type();
-                        final var optional = applicationProperty.optional();
-
-                        if (properties.containsKey(name)) {
-                            final var propertyValue = properties.getProperty(name);
-
-                            if (propertyValue == null || propertyValue.isBlank()) {
-                                if (!optional)
-                                    logger.warn("Blank application property value found: {}", propertyValue);
-                                else
-                                    injectDefaultValue(
-                                            logger,
-                                            name,
-                                            managedClassInstance,
-                                            field,
-                                            type);
-                            }
-
-                            injectPropertyValue(
-                                    logger,
-                                    name,
-                                    managedClassInstance,
-                                    field,
-                                    type,
-                                    propertyValue);
-                            
-                            result = true;
-                        } else {
-                            logger.warn("No application property defined for field annotation: {}", name);
-                        }
+                        injectApplicationProperty(logger, managedClassInstance, field);
+                    } else if (field.isAnnotationPresent(SystemProperty.class)) {
+                        injectSystemProperty(logger, managedClassInstance, field);
                     } else {
-                        throw new IllegalStateException("Field '" + fieldName + "' in class '" + className + "' is not annotated with " + ApplicationProperty.class.getName());
+                        throw new IllegalStateException("Field '" + fieldName + "' in class '" + className + "' is not annotated with " + ApplicationProperty.class.getName() + " or " + SystemProperty.class.getName());
                     }
                 } catch (final ClassNotFoundException | NoSuchFieldException e) {
                     logger.catching(e);
                 }
             }
+        }
+
+        logger.exit(result);
+
+        return result;
+    }
+
+    private static boolean injectApplicationProperty(final XLogger logger, final Object managedClassInstance, final Field field) throws PropertyInjectionException {
+        assert logger != null;
+
+        logger.entry(managedClassInstance, field);
+
+        assert managedClassInstance != null;
+        assert field != null;
+
+        final var properties = ApplicationConfigurator.getProperties();
+
+        boolean result = false;
+
+        if (!Modifier.isPublic(field.getModifiers()))
+            field.setAccessible(true);
+
+        final var applicationProperty = field.getAnnotation(ApplicationProperty.class);
+
+        final var name = applicationProperty.name();
+        final var type = applicationProperty.type();
+        final var optional = applicationProperty.optional();
+
+        if (properties.containsKey(name)) {
+            final var propertyValue = properties.getProperty(name);
+
+            if (propertyValue == null || propertyValue.isBlank()) {
+                if (!optional)
+                    logger.warn("Blank application property value found: {}", propertyValue);
+                else
+                    injectDefaultValue(
+                            logger,
+                            name,
+                            managedClassInstance,
+                            field,
+                            type);
+            }
+
+            injectPropertyValue(
+                    logger,
+                    name,
+                    managedClassInstance,
+                    field,
+                    type,
+                    propertyValue);
+
+            result = true;
+        } else {
+            logger.warn("No application property defined for field annotation: {}", name);
+        }
+
+        logger.exit(result);
+
+        return result;
+    }
+
+    private static boolean injectSystemProperty(final XLogger logger, final Object managedClassInstance, final Field field) throws PropertyInjectionException {
+        assert logger != null;
+
+        logger.entry(managedClassInstance, field);
+
+        assert managedClassInstance != null;
+        assert field != null;
+
+        boolean result = false;
+
+        if (!Modifier.isPublic(field.getModifiers()))
+            field.setAccessible(true);
+
+        final var systemProperty = field.getAnnotation(SystemProperty.class);
+
+        final var name = systemProperty.name();
+        final var type = systemProperty.type();
+        final var optional = systemProperty.optional();
+
+        final var propertyValue = System.getProperty(name);
+
+        if (propertyValue != null) {
+            if (propertyValue.isBlank()) {
+                if (!optional)
+                    logger.warn("Blank system property value found: {}", propertyValue);
+                else
+                    injectDefaultValue(
+                            logger,
+                            name,
+                            managedClassInstance,
+                            field,
+                            type);
+            }
+
+            injectPropertyValue(
+                    logger,
+                    name,
+                    managedClassInstance,
+                    field,
+                    type,
+                    propertyValue);
+
+            result = true;
+        } else {
+            logger.warn("No system property defined for field annotation: {}", name);
         }
 
         logger.exit(result);
@@ -225,7 +298,7 @@ public final class ClassManager {
             final String value) throws PropertyInjectionException {
         assert logger != null;
 
-        logger.entry(instance, propertyName, field, dataType, value);   // @todo Fix
+        logger.trace("entry with ({}, {}, {}, {}, {})", propertyName, instance, field, dataType, value);
 
         assert propertyName != null;
         assert instance != null;
