@@ -1,11 +1,12 @@
 package net.jmp.demo.annotated.application.main;
 
 /*
+ * (#)ClassManager.java 0.6.0   03/12/2024
  * (#)ClassManager.java 0.5.0   03/07/2024
  * (#)ClassManager.java 0.4.0   03/06/2024
  *
  * @author    Jonathan Parker
- * @version   0.5.0
+ * @version   0.6.0
  * @since     0.4.0
  *
  * MIT License
@@ -92,8 +93,14 @@ public final class ClassManager {
 
         final var managedAnnotation = managedClass.getAnnotation(ManagedClass.class);
 
-        if (managedAnnotation != null && injectAnnotatedFields(logger, managedClass, managedClassInstance))
-            logger.debug("Instance of class {} injected", managedClassInstance.getClass().getName());
+        if (managedAnnotation != null) {
+            if (injectAnnotatedFields(logger, managedClass, managedClassInstance))
+                logger.debug("Instance of class {} injected", managedClassInstance.getClass().getName());
+            else
+                logger.warn("Instance of class {} failed to be injected", managedClassInstance.getClass().getName());
+        } else {
+            logger.warn("Class {} is not annotated with @{}", managedClass.getName(), ManagedClass.class.getSimpleName());
+        }
 
         logger.exit();
     }
@@ -124,9 +131,9 @@ public final class ClassManager {
                     final var field = clazz.getDeclaredField(fieldName);
 
                     if (field.isAnnotationPresent(ApplicationProperty.class)) {
-                        injectApplicationProperty(logger, managedClassInstance, field);
+                        result = injectApplicationProperty(logger, managedClassInstance, field);
                     } else if (field.isAnnotationPresent(SystemProperty.class)) {
-                        injectSystemProperty(logger, managedClassInstance, field);
+                        result = injectSystemProperty(logger, managedClassInstance, field);
                     } else {
                         throw new IllegalStateException("Field '" + fieldName + "' in class '" + className + "' is not annotated with " + ApplicationProperty.class.getName() + " or " + SystemProperty.class.getName());
                     }
